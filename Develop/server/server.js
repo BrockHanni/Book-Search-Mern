@@ -23,7 +23,12 @@ const server = new ApolloServer({
 });
 
 // Integrate Apollo Server with Express
-server.applyMiddleware({ app });
+async function startApolloServer() {
+  await server.start();
+  server.applyMiddleware({ app });
+}
+
+startApolloServer();
 
 app.use(routes);
 
