@@ -16,7 +16,7 @@ module.exports = {
     }
     // if no token, return request object as is
     if (!token) {
-      return res.status(400).json({ message: 'You have no token!' });
+      return res.status(400).json({ message: 'Error: No token' });
     }
     // verify token and get user data out of it
     try {
@@ -26,7 +26,7 @@ module.exports = {
     }
     catch {
       console.log('Invalid token');
-      return res.status(400).json({ message: 'invalid token!' });
+      return res.status(400).json({ message: 'Error: Your token is invalid' });
     }
     // send to next endpoint
     next();
