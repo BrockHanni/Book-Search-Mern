@@ -1,8 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { ApolloServer } = require('apollo-server-express');
-const { typeDefs, resolvers } = require('./schema'); // Import your schema.js file
-
+const { typeDefs, resolvers } = require('./schema/index');
 const db = require('./config/connection');
 const routes = require('./routes');
 
