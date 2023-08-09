@@ -1,12 +1,11 @@
-// Importing necessary dependencies and utility functions
 const { AuthenticationError } = require('apollo-server-express');
 const { User } = require('../models');
 const { signToken } = require('../utils/auth');
 
-// Resolver functions
 const resolvers = {
     Query: {
         me: async (context) => {
+            // checks to see if logged in, if so, lets users select books, if not, throws error
             if (context.user) {
                 const userData = await User.findOne({ _id: context.user._id }).select('-__v -password');
                 return userData;
@@ -15,49 +14,53 @@ const resolvers = {
         }
     },
     Mutation: {
-        // Resolver for the 'addUser' mutation, which adds a new user to the database
+        // mutation to add a user
         addUser: async (args) => {
-            const user = await User.create(args);
-            const token = signToken(user);
-            return { token, user };
+            const username = await User.create(args);
+            const token = signToken(username);
+            return { token, username };
         },
+        // mutation to login a user
         login: async ({ email, password }) => {
-            const user = await User.findOne({ email });
-            const correctPw = await user.isCorrectPassword(password);
-            const token = signToken(user);
-            if (!user) {
-                throw new AuthenticationError('Incorrect credentials');
+            const username = await User.findOne({ email });
+            // gets the user 
+            const correctPassword = await username.isCorrectPassword(password);
+            const token = signToken(username);
+            // checks for correct password
+            if (!correctPassword) {
+                throw new AuthenticationError('Invalid Password');
             }
-            if (!correctPw) {
-                throw new AuthenticationError('Incorrect credentials');
+            // checks for correct email
+            if (!username) {
+                throw new AuthenticationError('Invalid Username');
             }
-            return { token, user };
+            return { token, username };
         },
-        // Resolver for the 'saveBook' mutation, which saves a book for the logged-in user
         saveBook: async ({ input }, context) => {
         
             if (context.user) {
-                const updatedUser = await User.findOneAndUpdate(
+                // adds book to savedBooks array, by updating the user's library
+                const updateLib = await User.findOneAndUpdate(
                     { _id: context.user._id },
                     { $addToSet: { savedBooks: input } }, 
                     { new: true, runValidators: true }
                 ); 
-                return updatedUser;
+                return updateLib;
             }
-            throw new AuthenticationError("You need to be logged in!");
+            throw new AuthenticationError("To save a book, please log in!");
         },
        
         removeBook: async ({ bookId }, context) => {
-            
+            // removes book from savedBooks array, by updating the user's library
             if (context.user) {
-                const updatedUser = await User.findOneAndUpdate(
+                const updatedLib = await User.findOneAndUpdate(
                     { _id: context.user._id },
                     { $pull: { savedBooks: { bookId: bookId } } }, 
                     { new: true, runValidators: true }
                 );
-                return updatedUser;
+                return updatedLib;
             }
-            throw new AuthenticationError('You need to be logged in!');
+            throw new AuthenticationError('To remove a book, please log in!');
         }
     }
 }

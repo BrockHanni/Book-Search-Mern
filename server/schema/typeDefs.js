@@ -3,35 +3,36 @@ const { gql } = require('apollo-server-express');
 
 //GraphQL type definitions using the GraphQL schema language
 const typeDefs = gql`
-    type User {
-        _id: ID
-        username: String
-        email: String
-        bookCount: Int
-        savedBooks: [Book]
-    }
 
     type Book {
-        bookId: ID
+        title: String
         authors: [String]
         description: String
-        title: String
+        bookId: ID 
         image: String
         link: String
     }
 
-    type Auth {
-        token: ID
-        user: User
-    }
-    
     input SavedBookInput {
-        authors: [String]
         title: String
+        authors: [String]
         description: String
         bookId: String
         image: String
         link: String
+    }
+
+    type User {
+        username: String
+        email: String
+        _id: ID
+        bookCount: Int
+        savedBooks: [Book]
+    }
+
+    type Auth {
+        user: User
+        token: ID
     }
 
     type Query {
