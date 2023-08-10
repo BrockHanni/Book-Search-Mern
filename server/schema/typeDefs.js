@@ -1,7 +1,6 @@
 const { gql } = require('apollo-server-express');
 
-
-//GraphQL type definitions using the GraphQL schema language
+// Define your GraphQL schema using the gql template literal
 const typeDefs = gql`
 
     type Book {
@@ -35,16 +34,17 @@ const typeDefs = gql`
         token: ID
     }
 
-    type Query {
-        me: User
-    }
-
     type Mutation {
         login(email: String!, password: String!): Auth
         addUser(username: String!, email: String!, password: String!): Auth
         saveBook(input: SavedBookInput): User
         removeBook(bookId: String!): User
     }
+
+    type Query {
+        me: User
+    }
 `;
 
+// Export the GraphQL type definitions
 module.exports = typeDefs;
